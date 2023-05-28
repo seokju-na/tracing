@@ -3,7 +3,7 @@
 Scoped logging system.
 
 ```bash
-$ yarn add https://github.com/seokju-na/tracing/main
+$ yarn add tracing@https://github.com/seokju-na/tracing#main
 ```
 
 ## Usage
