@@ -1,0 +1,32 @@
+name: ci
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - main
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18.16.0
+          cache: 'yarn'
+      - uses: actions/cache@v3
+        with:
+          path: |
+            **/*.tsbuildinfo
+            **/.eslintcache
+          key: ci-cache-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ci-cache-
+      - run: yarn install --immutable --immutable-cache
+      - run: yarn typecheck
+      - run: yarn lint
+      - run: yarn test
+      - run: yarn build
